@@ -1,0 +1,71 @@
+import React, {useState} from "react";
+import CategoryFilter from "./CategoryFilter";
+import NewTaskForm from "./NewTaskForm";
+import TaskList from "./TaskList";
+
+import { CATEGORIES, TASKS } from "../data";
+console.log("Here's the data you're working with");
+console.log({ CATEGORIES, TASKS });
+
+function App() {
+
+   // Task List
+   const [taskList, setTaskList] = useState(TASKS);
+
+   // On Delete
+  function onDeleteHandler(taskID){
+    const newTaskList = taskList.filter(task => {
+      const id = task.category + "-" + task.text.split(' ').join('');
+      return taskID !== id ? task : null;
+    });
+    
+    setTaskList(newTaskList);
+  }
+
+  // Category Buttons
+  const categoryButtonArray = CATEGORIES.map(category => {
+    return <button key={category} id={category} className="" onClick={(e) => onClickHandler(e)}>{category}</button>
+  });
+
+  const [categoryButtons, setCategoryButtons] = useState(categoryButtonArray);
+
+  function onClickHandler(e) {
+    const newCategoryButtons = categoryButtons.map(categoryButton => {
+      if(e.target.id === categoryButton.key) {
+        return <button key={categoryButton.key} id={categoryButton.key} className="selected" onClick={(e) => onClickHandler(e)}>{categoryButton.key}</button>;
+      } else {
+        return <button key={categoryButton.key} id={categoryButton.key} className="" onClick={(e) => onClickHandler(e)}>{categoryButton.key}</button>;
+      }
+    });
+
+    const newTaskList = taskList.filter(task => {
+      if(e.target.id === "All") {
+        return task;
+      } else {
+        return e.target.id === task.category ? task : null;
+      }
+    });
+
+    setTaskList(newTaskList);
+    setCategoryButtons(newCategoryButtons);
+    
+  }
+
+  // New Task Handler
+  function onSubmitTaskHandler(taskObj) {
+    const newTaskList = [...setTaskList, ]
+    setTaskList()
+
+  }
+
+  return (
+    <div className="App">
+      <h2>My tasks</h2>
+      <CategoryFilter categoryArray={categoryButtons} />
+      <NewTaskForm categories={CATEGORIES}/>
+      <TaskList tasks={taskList} onDelete={onDeleteHandler}/>
+    </div>
+  );
+}
+
+export default App;
